@@ -1,149 +1,78 @@
-# SportsButtonESP32C3
-你会用一个按钮做些什么呢？
-打开一个灯光？
-一个门铃？
-还是让人运动起来？
+# DIY Sports Push Buttons - Based on ESP32-C3
 
+![image](https://user-images.githubusercontent.com/65546290/203234603-6e5cd233-cc56-4582-bf34-83ca08bb1c30.png)
 
-按钮有很多种，但我最喜欢街机按钮，因为它们通常有很好的触感，“咔哒”的感觉。我的工具箱里有几个街机按钮，我一直想用它们做点什么。有一天我灵光闪现，可以利用按钮DIY一个运动装置。我将制作 4 个运动按钮，一个作为主节点，带有支持菜单显示的屏幕，另外三个作为从节点，通过ESP-NOW协议通信。它们都基于 ESP32-C3，一款来自 DFRobot 的微型控制器。
+Push buttons, also known as tactile switches, can be found everywhere from simple lamps, doorbells to large industrial machines. There are so many kinds of push buttons, but I like the arcade push buttons most because they usually have a great tactile, "clicky” feel. I had several arcade buttons in my toolbox, and I always want to make something with them. Lately, I've been working out. One day an idea comes to my mind, can I turn my arcade buttons into a device that helps me do sports? Sounds not bad. I decided to give it a try.
+I am going to make 4 sports push buttons, one as a master node with a screen that supports a menu display and the other three as salve nodes. They are all based on ESP32-C3, a micro Beetle controller from DFRobot. It integrates a battery charging management function, which allows us to connect a lithium battery to it as a mobile power supply for the project, or charge the battery from the controller's USB-C port when the battery is low. Also, to make them more interactive, I will add some sound and lighting to the push buttons. 
 
+This is what it looks like in the end. 
+![image](https://user-images.githubusercontent.com/65546290/203230928-a3bd57ae-2f2b-4b55-ab39-c5c1d633fb72.png)
 
 
+[The relevant information is uploaded on our YouTube channel]()
 
 
 
+# HARDWARE LIST
+* 4x ESP32-C3
+* OLED Display
+* 4x Digital Buzzer
+* WS2812 RGB LED strip
+* 4x 3.7V battery
+* 4x Arcade Push Button
+* 4x Power switch
+* 4x Case
 
+# Connection 
+The master node comes with a screen while the slave nodes do not. All parts should be connected as the diagram below.
+* Buzzer -> Controller’s P6
+* Button -> Controller’s P5
+* WS2812 -> Controller’s P0
+* Screen->I2C
+![image](https://user-images.githubusercontent.com/65546290/203233723-237fa063-0c83-4304-bb07-6a98fe9f6231.png)
 
-材料清单：
-ESP32-C3x4
-OLED显示屏
-数字蜂鸣器x4
-3.7V电池x4
-WS2812灯珠x4
-游艺机按键x4
-电源开关x4
-外壳x4
 
+# Upload Program
+ 
+Since the master node communicates with the slave nodes by ESP-NOW in this project, the only MAC address of each ESP32-C3 should be obtained so that the master knows which device the message is intended for. 
+![image](https://user-images.githubusercontent.com/65546290/203233889-405fa662-9fe3-46ba-a65f-a03adeaad898.png)
 
 
-电路连接：
+Revise the MAC address to yours and upload the program.
+![image](https://user-images.githubusercontent.com/65546290/203233622-48e2762e-c5f8-4fbe-9b16-464a67e1eab3.png)
 
 
+# Start to Play
+In the program, I set three modes for the buttons. Short press to select mode, press and hold for 2 seconds to confirm or enter the selection menu.
+![image](https://user-images.githubusercontent.com/65546290/203233989-ef65266a-602b-45e6-8486-f3b6dfc41a50.png)
 
-蜂鸣器连接在第（6）接口上
-按钮接线连接在第（5）接口上
-ws2812连在第（0）接口上
-屏幕连接到I2C接口上
-此应用共有4个节点，包含1个主节点和3个从节点，主节点与从节点的区别在于多一个显示屏
 
+## Mode 1- Whac-A-Mole
+In this mode, all 4 buttons show green light at first, then one of them changes to red randomly, and we need to hit the red one within a certain time to score. They can be played in various ways.
 
+![image](https://user-images.githubusercontent.com/65546290/203234109-37bd4f0c-3304-4a8b-818c-4af7a4595fcc.png)
+![image](https://user-images.githubusercontent.com/65546290/203234123-a973bb7f-ae09-4c57-af68-dc8b5c06c65c.png)
+![image](https://user-images.githubusercontent.com/65546290/203234135-f96d0b91-76ec-4f8d-8794-9f9deb69d9f9.png)
+![image](https://user-images.githubusercontent.com/65546290/203234141-b2d509f8-55b5-40c1-b4d6-28a8cb7d762c.png)
 
-硬件组装：
 
+## Mode 2- Relay Race Mode
+In this mode, hit the first button, then the second will light up green. Just like a relay race, the green light acts like a baton, which will be transferred one by one among four members repeatedly.
+![image](https://user-images.githubusercontent.com/65546290/203234157-c2e63d0f-9de5-407e-9f12-3155112ebaf3.png)
 
 
-焊接WS2812灯珠（按照GND，VCC，信号的顺序焊接起来）
+## Mode 3- Random Picker Mode
+When entering this mode, 4 buttons repeatedly show blue light in order, hit the main button(button with screen), and this time the button whose light turns on in blue will be the picked one. 
 
 
-焊接3.7V充电锂电池
+## Or you can only use one button to test how high you can jump. 
+![image](https://user-images.githubusercontent.com/65546290/203234225-36cf0f9a-961f-47f3-8e82-68df7021ba0f.png)
 
+# ESP-NOW delay test:
+In the project, the master communicates with the salves by ESP-NOW. To ensure that the NOW protocol meets the communication requirement, here I completed a simple ESP-NOW delay test to record the time one node transmits a message to another and receives a replay. It can be seen that the total delay for transmitting and receiving is about 4ms, which means only a 2ms delay for one-direction transmission, equaling to 1/100s.
 
+![image](https://user-images.githubusercontent.com/65546290/203234284-34f8f1fc-bd2d-4307-86b8-5980f0c1d546.png)
+ 
 
-通过Gravity接口快速连接：显示屏/蜂鸣器—ESP32-C3
-
-
-在塑料外壳上切割出Type-C/显示屏/开关/按钮的切口
-
-
-
-安装游艺机按键
-
-
-安装电源开关
-
-
-安装显示屏
-
-
-利用热熔胶固定电池/蜂鸣器
-
-
-固定ESP32-C3
-
-
-
-
-
-
-合上盖子，拧上螺丝
-
-
-至此已经完成主节点的制作，还需重复上述步骤完成另外3个从节点的制作（从节点不包含显示屏）
-
-
-
-
-上传程序
-
-
-此应用主从节点之间通过ESP-NOW协议通信，想要通过NOW协议进行通信，还需要获取每个ESP32-C3的唯一MAC地址，这样才知道将信息发送到哪个设备。
-
-
-把程序里的MAC地址修改为自己的，然后上传
-
-
-
-
-
-展示玩法：
-简单说下游戏规则的设置
-在程序里，我预设了三个模式，可以用短按来选择，长按2秒来确认选择。需要切换的时候，随时可以用长按来进入菜单。
-
-
-模式1-是打地鼠模式
-这个模式下，会随机在4个运动按钮上出现红色，需要再最短时间内按下，才能获得成绩。
-
-
-
-
-
-
-
-
-模式2-是接力模式
-在这个模式下，每按一次运动按钮上出现的绿色按钮，下一个运动按钮就会变成绿色。
-
-
-模式3-是随机模式
-在这个模式下，我们按下运动按钮，就会随机的选择一个运动按钮。如果不知道选谁时，可以让机器帮你决定。
-
-还有单个节点的摸高玩法
-
-
-
-
-
-
-ESP-NOW延时测试：
-
-为确认NOW协议可以满足通信要求，这样做了一个基本的ESP-NOW通信延时测试，记录节点向另一节点发送信息并收到返回信息的时间，发射和接收信息的延时是4ms左右，单向传播的延时约为2ms左右，相当于1/100秒。
-
-
-
-
-
-
-
-
-我猜此刻你一定是坐着，眼睛注视着显示屏吧!
-长时间的久坐，你的腰还好吗？
-快起来活动活动，放松一下吧！
-
-
-
-
-
-
-
-传送门-
-https://github.com/DFRobot/SportsButtonESP32C3
+# Thank
+Well, that's all for this project. There are so many possibilities for these sports push buttons. Come and try your sports buttons! Thanks for reading, feel free to leave your comments if you have any other good ideas!
