@@ -1,5 +1,5 @@
 ﻿/*!
- * @file From_Node.ino
+ * @file Slave_Node.ino
  * @brief This is the slave node program of the C3 device, which has three preset modes
          Mode_One Whac-A-Mole Mode
          Mode_Two Relay Race Mode
