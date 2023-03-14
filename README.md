@@ -9,7 +9,7 @@ This is what it looks like in the end.
 ![image](https://user-images.githubusercontent.com/65546290/203230928-a3bd57ae-2f2b-4b55-ab39-c5c1d633fb72.png)
 
 
-[The relevant information is uploaded on our YouTube channel]()
+[The relevant information is uploaded on our YouTube channel](https://www.youtube.com/watch?v=HAt3EoVqO7I)
 
 
 
