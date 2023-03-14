@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file Slave_Node.ino
  * @brief This is the slave node program of the C3 device, which has three preset modes
          Mode_One Whac-A-Mole Mode
@@ -22,8 +22,8 @@ bool Modetwo = false;
 bool Modeone = false;
 bool Singlenode = false;
 bool Vocalization = false;
-String Mode = "wu";
-static unsigned long time = 0;
+
+static unsigned long times = 0;
 static uint8_t PEER[]{ 0x60, 0x55, 0xF9, 0xB1, 0x83, 0xD1 };  //MAC address of the master node
 //static uint8_t PEER[]{ 0x60, 0x55, 0xF9, 0xB0, 0xB0, 0x49 };
 
@@ -62,7 +62,7 @@ void btn_Event() {
 //Mode One
   if (Modeone) {
     while (1 < 2) {
-      if (millis() - time < 2000U) {
+      if (millis() - times < 2000U) {
         if (digitalRead(btn_Buttons) == 0) {
           colorWipe(RGB_Strip.Color(0, 255, 0));  
           Send_data("on");
@@ -70,7 +70,7 @@ void btn_Event() {
         }
       }
 
-      if (millis() - time > 2000U) {
+      if (millis() - times > 2000U) {
         
         colorWipe(RGB_Strip.Color(0, 255, 0));  
                                               
@@ -147,7 +147,7 @@ void Send_data(String str) {
     data[i] = str[i];
   }
   bool f = WifiEspNow.send(PEER, reinterpret_cast<const uint8_t*>(data), len);
-  Serial.println("Sending data：" + str);
+  Serial.println("Sending data:" + str);
   if (f) {
     Serial.println("Send successfully");
   } else {
@@ -172,24 +172,26 @@ void Handler(String read_data) {
     Serial.println("Data received:" + read_data);
 
 
-    if (read_data == "a" && Mode == "one")  
+    if (read_data == "onea")  
     {
-      time = millis();
+      Singlenode = true;
+      times = millis();
       colorWipe(RGB_Strip.Color(255, 0, 0));  
       fengmingqi();
       Modeone = true;
       Modetwo = false;
     }
 
-    if (read_data == "a" && Mode == "two")  
+    if (read_data == "twoa")  
     {
+      Singlenode = true;
       colorWipe(RGB_Strip.Color(0, 255, 0));  
       fengmingqi();
       Modetwo = true;
       Modeone = false;
     }
 
-    if (read_data == "a" && Mode == "three") 
+    if (read_data == "threea") 
     {
 
       colorWipe(RGB_Strip.Color(0, 0, 255));
@@ -197,7 +199,7 @@ void Handler(String read_data) {
       colorWipe(RGB_Strip.Color(0, 0, 0));
     }
 
-    if (read_data == "a" && Mode == "threes")  
+    if (read_data == "threesa")  
     {
 
       colorWipe(RGB_Strip.Color(0, 0, 255));
@@ -210,26 +212,20 @@ void Handler(String read_data) {
     {
       colorWipe(RGB_Strip.Color(0, 255, 0)); 
       Vocalization = true;
-      Mode = "one";
       Singlenode = true;
     }
     if (read_data == "two")  
     {
       colorWipe(RGB_Strip.Color(0, 0, 0));
       Vocalization = true;
-      Mode = "two";
       Singlenode = true;
     }
     if (read_data == "three")  
     {
       Vocalization = true;
-      Mode = "three";
       Singlenode = true;
     }
-    if (read_data == "threes")  
-    {
-      Mode = "threes";
-    }
+
 
 
     if (read_data == "gb")  

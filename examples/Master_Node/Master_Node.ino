@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file Master_Node.ino
  * @brief This is the master node program of the C3 device, which has three preset modes
          Mode_One Whac-A-Mole Mode
@@ -40,6 +40,7 @@ Adafruit_NeoPixel RGB_Strip = Adafruit_NeoPixel(NUM_LED, PIN_LED, NEO_GRB + NEO_
 
 int randNumber;
 int fraction, Judgment, key = 0;
+int frequencys = 15;  //Number of games
 
 unsigned long last_button_time = 0;
 unsigned long last_button_time1 = 0;
@@ -52,21 +53,16 @@ bool button_press = false;
 bool quit = true;
 bool interval = true;
 
-
-// static uint8_t PEER0[]{ 0x84, 0xF7, 0x03, 0x42, 0x00, 0x15 };  //A
-// static uint8_t PEER1[]{ 0x84, 0xF7, 0x03, 0x5F, 0x96, 0xB9 };  //B
-// static uint8_t PEER2[]{ 0x84, 0xF7, 0x03, 0xA9, 0xDA, 0x65 };  //C
-
 static uint8_t PEER0[]{ 0x34, 0xB4, 0x72, 0x87, 0x21, 0x81 };  //MAC address of the slave node
 static uint8_t PEER1[]{ 0x60, 0x55, 0xF9, 0xC7, 0x3E, 0xDD };  //
 static uint8_t PEER2[]{ 0x60, 0x55, 0xF9, 0xB0, 0x57, 0x65 };  //
 
 
 
-int btn_Buttons = 5;  //Define button pin
-int Buzzer = 6;       //Defin buzzer pin
-// int btn_Buttons = 4;
-// int Buzzer = 6;
+ int btn_Buttons = 5;  //Define button pin
+ int Buzzer = 6;       //Defin buzzer pin
+//int btn_Buttons = 4;
+//int Buzzer = 6;
 
 
 
@@ -83,14 +79,6 @@ const uint8_t col[] U8X8_PROGMEM = {
   0x00, 0xfe, 0x1f, 0x00, 0x00, 0xf8, 0x07, 0x00, 0x00, 0xe0, 0x01, 0x00, 0x00,
   0xc0, 0x00, 0x00
 };
-
-
-
-
-
-
-
-
 
 
 void setup() {
@@ -215,7 +203,7 @@ void btn_Event() {
 
 
         int c1 = 0;
-        while (quit) {
+        while (c1 < frequencys && quit) {
 
           unsigned long time = millis();
           if (digitalRead(btn_Buttons) == 0) {
@@ -246,16 +234,16 @@ void btn_Event() {
             Serial.println(randNumber);
             c1++;
             if (randNumber == 0) {
-              Send_data0();
+              Send_data0("onea");
             }
 
 
             if (randNumber == 1) {
-              Send_data1();
+              Send_data1("onea");
             }
 
             if (randNumber == 2) {
-              Send_data2();
+              Send_data2("onea");
             }
 
 
@@ -358,7 +346,7 @@ void btn_Event() {
             int quyu;
             quyu = fraction % 4;
             if (quyu == 1) {
-              Send_data0();
+              Send_data0("twoa");
             }
 
             Judgment = fraction;
@@ -372,13 +360,13 @@ void btn_Event() {
         while (Mode == "three") {
           for (int xh = 0; xh <= 2; xh++) {
             if (xh == 0) {
-              Send_data0();
+              Send_data0("threea");
             }
             if (xh == 1) {
-              Send_data1();
+              Send_data1("threea");
             }
             if (xh == 2) {
-              Send_data2();
+              Send_data2("threea");
             }
           }
 
@@ -387,17 +375,17 @@ void btn_Event() {
           colorWipe(RGB_Strip.Color(0, 0, 0));
 
           if (digitalRead(btn_Buttons) == 0) {
-            Send_data3("threes");
+           // Send_data3("threesa");
 
             randNumber = random(0, 4);
             if (randNumber == 0) {
-              Send_data0();
+              Send_data0("threesa");
             }
             if (randNumber == 1) {
-              Send_data1();
+              Send_data1("threesa");
             }
             if (randNumber == 2) {
-              Send_data2();
+              Send_data2("threesa");
             }
             if (randNumber == 3) {
               colorWipe(RGB_Strip.Color(0, 0, 255));
@@ -442,8 +430,8 @@ void Init_ESP_NOW() {
 
 
 //Send data to slave node A
-void Send_data0() {
-  String str = "a";
+void Send_data0(String str) {
+ // String str = "a";
   char data[60];
   int len = str.length();
   for (int i = 0; i < len; i++) {
@@ -453,7 +441,7 @@ void Send_data0() {
     data[i] = str[i];
   }
   bool h = WifiEspNow.send(PEER0, reinterpret_cast<const uint8_t*>(data), len);
-  Serial.println("Sending data：" + str);
+  Serial.println("Sending data:" + str);
   if (h) {
     Serial.println("Send successfully");
   } else {
@@ -465,8 +453,8 @@ void Send_data0() {
 
 
 //Send data to slave node B
-void Send_data1() {
-  String str = "a";
+void Send_data1(String str) {
+ // String str = "a";
   char data[60];
   int len = str.length();
   for (int i = 0; i < len; i++) {
@@ -476,7 +464,7 @@ void Send_data1() {
     data[i] = str[i];
   }
   bool f = WifiEspNow.send(PEER1, reinterpret_cast<const uint8_t*>(data), len);
-  Serial.println("Sending data：" + str);
+  Serial.println("Sending data:" + str);
   if (f) {
     Serial.println("Send successfully");
   } else {
@@ -488,8 +476,8 @@ void Send_data1() {
 
 
 //Send data to slave node C
-void Send_data2() {
-  String str = "a";
+void Send_data2(String str) {
+  //String str = "a";
   char data[60];
   int len = str.length();
   for (int i = 0; i < len; i++) {
@@ -499,7 +487,7 @@ void Send_data2() {
     data[i] = str[i];
   }
   bool g = WifiEspNow.send(PEER2, reinterpret_cast<const uint8_t*>(data), len);
-  Serial.println("Sending data：" + str);
+  Serial.println("Sending data:" + str);
   if (g) {
     Serial.println("Send successfully");
   } else {
@@ -523,7 +511,7 @@ void Send_data3(String str) {
   bool h = WifiEspNow.send(PEER0, reinterpret_cast<const uint8_t*>(data), len);
   bool f = WifiEspNow.send(PEER1, reinterpret_cast<const uint8_t*>(data), len);
   bool g = WifiEspNow.send(PEER2, reinterpret_cast<const uint8_t*>(data), len);
-  Serial.println("Sending data：" + str);
+  Serial.println("Sending data:" + str);
   if (g && f && g) {
     Serial.println("Send successfully");
   } else {
@@ -567,10 +555,10 @@ void Handler(String read_data) {
       int quyu;
       quyu = fraction % 4;
       if (quyu == 2) {
-        Send_data1();
+        Send_data1("twoa");
       }
       if (quyu == 3) {
-        Send_data2();
+        Send_data2("twoa");
       }
       if (quyu == 0) {
 
